@@ -1,0 +1,35 @@
+{
+  # debug is handy during bring-up; remove when stable
+  debug
+
+  # Access log -> shared volume, so CrowdSec can read it
+  log {
+    output file /var/log/caddy/access.log {
+      roll_size 100MiB
+      roll_keep 5
+      roll_keep_for 100d
+    }
+    format json
+    level INFO
+  }
+
+  crowdsec {
+    api_url http://crowdsec:8080
+    api_key {env.CROWDSEC_API_TOKEN}
+    ticker_interval 15s
+    appsec_url http://crowdsec:7422
+    enable_hard_fails
+  }
+}
+
+# TODO: Bytt ut `your.domain.tld` med ditt faktiske domenenavn.
+# Hvis du bruker Cloudflare DNS-01 med caddy-dns/cloudflare, sørg for at
+# CLOUDFLARE_API_TOKEN er satt i .env.
+your.domain.tld {
+  route {
+    crowdsec
+    appsec
+
+    respond "Caddy + CrowdSec (Bouncer + AppSec) OK"
+  }
+}
