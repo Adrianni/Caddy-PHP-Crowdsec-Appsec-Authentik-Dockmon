@@ -1,0 +1,31 @@
+# Custom Caddy build with xcaddy modules + non-root runtime (creates caddy user explicitly)
+ARG CADDY_VERSION=2.10.2
+
+FROM caddy:${CADDY_VERSION}-builder-alpine AS builder
+
+RUN xcaddy build \
+  --with github.com/sjtug/caddy2-filter \
+  --with github.com/caddy-dns/cloudflare \
+  --with github.com/hslatman/caddy-crowdsec-bouncer/http \
+  --with github.com/hslatman/caddy-crowdsec-bouncer/appsec \
+  --output /usr/bin/caddy
+
+FROM caddy:${CADDY_VERSION}-alpine
+
+USER root
+
+# Tools for setcap + create a non-root user (some Caddy Alpine images don't ship with a caddy user)
+RUN apk add --no-cache libcap
+
+# Create caddy user/group, and ensure writable dirs exist
+RUN addgroup -S caddy && adduser -S -G caddy -h /var/lib/caddy -s /sbin/nologin caddy && \
+    mkdir -p /var/lib/caddy /data /config /var/log/caddy && \
+    chown -R caddy:caddy /var/lib/caddy /data /config /var/log/caddy
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+
+# Allow binding to 80/443 as non-root
+RUN setcap cap_net_bind_service=+ep /usr/bin/caddy
+
+USER caddy
+EXPOSE 80 443
