@@ -10,6 +10,7 @@ It also runs CrowdSec in its own container (LAPI + AppSec), with collections ins
 
 ## Layout
 - build/Dockerfile.caddy        -> builds the custom Caddy image
+- build/Dockerfile.php          -> builds the custom PHP-FPM image
 - deploy/compose.yaml           -> runs the full stack
 - deploy/Caddyfile              -> localhost Caddy config with CrowdSec/AppSec + Authentik
 - deploy/crowdsec/acquis.d/*    -> acquis for Caddy + AppSec
@@ -21,11 +22,11 @@ Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the
 ```bash
 sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config} \
   /opt/Authentik/{postgres,redis,media,custom-templates} \
-  /opt/php-fm/{data,config}
+  /opt/php-fpm/{data,config}
 sudo chown -R 1000:1000 /opt/caddy/{data,config,logs}
 sudo chown -R 0:0 /opt/crowdsec/{data,config}
 sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,custom-templates}
-sudo chown -R 1000:1000 /opt/php-fm/{data,config}
+sudo chown -R 1000:1000 /opt/php-fpm/{data,config}
 ```
 
 Go to the deploy folder and create `.env`:
@@ -38,7 +39,7 @@ nano .env
 
 Set `CROWDSEC_API_TOKEN`, `AUTHENTIK_SECRET_KEY`, and `AUTHENTIK_POSTGRES_PASSWORD` in `deploy/.env`.
 
-## 2) Start the stack (builds the Caddy image on first run)
+## 2) Start the stack (builds the Caddy + PHP-FPM images on first run)
 ```bash
 docker compose up -d --build
 ```
@@ -84,3 +85,5 @@ docker compose up -d --build
 ```
 
 If you want newer Authentik, update the image tag in `deploy/compose.yaml` and re-run the steps above.
+
+If you want newer PHP, update `PHP_VERSION` in `deploy/compose.yaml` and rebuild the stack.

@@ -132,12 +132,17 @@ services:
     stop_grace_period: 5s
 
   php-fpm:
-    image: php:latest-fpm
+    build:
+      context: ..
+      dockerfile: build/Dockerfile.php
+      args:
+        PHP_VERSION: "8.4"
+    image: my-php-fpm:custom
     container_name: php-fpm
     restart: unless-stopped
     volumes:
-      - /opt/php-fm/data:/var/www/html
-      - /opt/php-fm/config:/usr/local/etc/php
+      - /opt/php-fpm/data:/var/www/html
+      - /opt/php-fpm/config:/usr/local/etc/php
     networks:
       - proxy
 
