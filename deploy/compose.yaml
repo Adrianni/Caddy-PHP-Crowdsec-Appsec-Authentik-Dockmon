@@ -138,7 +138,7 @@ services:
       context: ..
       dockerfile: build/Dockerfile.php
       args:
-        PHP_VERSION: "8.4"
+        PHP_VERSION: "8.5"
     image: my-php-fpm:custom
     container_name: php-fpm
     restart: unless-stopped
