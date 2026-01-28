@@ -1,22 +1,30 @@
 # Caddy (xcaddy custom) + CrowdSec (LAPI + AppSec) – Docker stack
 
-Dette oppsettet bygger en custom Caddy-binær med xcaddy-modulene:
+This setup builds a custom Caddy binary with the following xcaddy modules:
 - github.com/sjtug/caddy2-filter
 - github.com/caddy-dns/cloudflare
 - github.com/hslatman/caddy-crowdsec-bouncer/http
 - github.com/hslatman/caddy-crowdsec-bouncer/appsec
 
-Og kjører CrowdSec i egen container (LAPI + AppSec), med collections installert ved oppstart.
+It also runs CrowdSec in its own container (LAPI + AppSec), with collections installed at startup.
 
-## Struktur
-- build/Dockerfile.caddy        -> bygger custom Caddy
-- deploy/compose.yaml           -> kjører hele stacken
-- deploy/Caddyfile              -> eksempel-konfig (MÅ endres til ditt domene)
-- deploy/crowdsec/acquis.d/*    -> acquis for caddy + appsec
-- deploy/.env.example           -> kopier til deploy/.env
+## Layout
+- build/Dockerfile.caddy        -> builds the custom Caddy image
+- deploy/compose.yaml           -> runs the full stack
+- deploy/Caddyfile              -> example config (MUST be changed to your domain)
+- deploy/crowdsec/acquis.d/*    -> acquis for Caddy + AppSec
+- deploy/.env.example           -> copy to deploy/.env
 
-## 1) Forbered
-Gå til deploy-mappen og lag .env:
+## 1) Prepare
+Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the image):
+
+```bash
+sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config}
+sudo chown -R 1000:1000 /opt/caddy/{data,config,logs}
+sudo chown -R 0:0 /opt/crowdsec/{data,config}
+```
+
+Go to the deploy folder and create `.env`:
 
 ```bash
 cd deploy
@@ -24,21 +32,21 @@ cp .env.example .env
 nano .env
 ```
 
-Oppdater `your.domain.tld` i `deploy/Caddyfile` til ditt faktiske domene.
+Update `your.domain.tld` in `deploy/Caddyfile` to your actual domain.
 
-## 2) Start stacken (bygger Caddy-image første gang)
+## 2) Start the stack (builds the Caddy image on first run)
 ```bash
 docker compose up -d --build
 ```
 
-## 3) Generer CrowdSec bouncer key (én gang)
-Kjør:
+## 3) Generate a CrowdSec bouncer key (one-time)
+Run:
 
 ```bash
 docker compose exec crowdsec cscli bouncers add caddyDmz
 ```
 
-Kopier nøkkelen som skrives ut og sett den inn i `deploy/.env` som `CROWDSEC_API_TOKEN=...`.
+Copy the key that is printed and set it in `deploy/.env` as `CROWDSEC_API_TOKEN=...`.
 
 Restart Caddy:
 
@@ -46,13 +54,13 @@ Restart Caddy:
 docker compose restart caddy
 ```
 
-## 4) Sjekk status
+## 4) Check status
 ```bash
 docker compose logs -f caddy
 docker compose exec crowdsec cscli collections list
 docker compose exec crowdsec cscli metrics
 ```
 
-## Notater
-- CrowdSec leser Caddy-logger fra et delt Docker-volume (`caddy_logs`).
-- AppSec må lytte på 0.0.0.0:7422 i containeren for at Caddy skal nå den.
+## Notes
+- CrowdSec reads Caddy logs from `/opt/caddy/logs` via a shared bind mount.
+- AppSec must listen on 0.0.0.0:7422 in the container so Caddy can reach it.

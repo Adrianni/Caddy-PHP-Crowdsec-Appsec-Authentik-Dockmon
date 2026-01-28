@@ -8,11 +8,11 @@ services:
       # Install collections at startup (replaces manual `cscli collections install ...`)
       - COLLECTIONS=crowdsecurity/caddy crowdsecurity/appsec-virtual-patching crowdsecurity/appsec-generic-rules
     volumes:
-      - crowdsec_data:/var/lib/crowdsec/data
-      - crowdsec_config:/etc/crowdsec
+      - /opt/crowdsec/data:/var/lib/crowdsec/data
+      - /opt/crowdsec/config:/etc/crowdsec
       - ./crowdsec/acquis.d:/etc/crowdsec/acquis.d:ro
       # Read Caddy logs from shared volume
-      - caddy_logs:/var/log/caddy:ro
+      - /opt/caddy/logs:/var/log/caddy:ro
     networks:
       - proxy
 
@@ -36,10 +36,10 @@ services:
       - TZ=Europe/Oslo
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile:ro
-      - caddy_data:/data
-      - caddy_config:/config
+      - /opt/caddy/data:/data
+      - /opt/caddy/config:/config
       # Write logs to a shared volume (CrowdSec reads them)
-      - caddy_logs:/var/log/caddy
+      - /opt/caddy/logs:/var/log/caddy
     networks:
       - proxy
     stop_grace_period: 5s
@@ -50,10 +50,3 @@ services:
 
 networks:
   proxy:
-
-volumes:
-  caddy_data:
-  caddy_config:
-  caddy_logs:
-  crowdsec_data:
-  crowdsec_config

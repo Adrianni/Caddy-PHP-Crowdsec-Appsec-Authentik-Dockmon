@@ -18,9 +18,9 @@ USER root
 RUN apk add --no-cache libcap
 
 # Create caddy user/group, and ensure writable dirs exist
-RUN addgroup -S caddy && adduser -S -G caddy -h /var/lib/caddy -s /sbin/nologin caddy && \
-    mkdir -p /var/lib/caddy /data /config /var/log/caddy && \
-    chown -R caddy:caddy /var/lib/caddy /data /config /var/log/caddy
+RUN addgroup -S -g 1000 caddy && adduser -S -G caddy -u 1000 -h /var/lib/caddy -s /sbin/nologin caddy && \
+    mkdir -p /var/lib/caddy /data /config /var/log/caddy /opt/caddy/data /opt/caddy/config /opt/caddy/logs && \
+    chown -R caddy:caddy /var/lib/caddy /data /config /var/log/caddy /opt/caddy
 
 COPY --from=builder /usr/bin/caddy /usr/bin/caddy
 
