@@ -28,7 +28,7 @@ Go to the deploy folder and create `.env`:
 
 ```bash
 cd deploy
-cp .env.example .env
+cp dotenv_example .env
 nano .env
 ```
 
