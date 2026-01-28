@@ -20,37 +20,32 @@
   }
 }
 
-(authentik) {
+(authentik-auth) {
   forward_auth http://authentik-server:9000 {
     uri /outpost.goauthentik.io/auth/caddy
     copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Entitlements X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
-  }
-
-  reverse_proxy /outpost.goauthentik.io/* http://authentik-server:9000 {
-    header_up Host {http.reverse_proxy.upstream.hostport}
   }
 }
 
 :80, :443 {
   route {
+    # 1) security først
     crowdsec
     appsec
 
-    # (Valgfritt) Helt enkel helsesjekk uten å involvere PHP
-    handle /health {
-      respond "OK" 200
+    # 2) outpost må routes før auth (ellers kan du få loop)
+    handle /outpost.goauthentik.io/* {
+      reverse_proxy http://authentik-server:9000 {
+        header_up Host {http.reverse_proxy.upstream.hostport}
+      }
     }
 
-    # Hvis du vil beskytte alt bak Authentik:
-    import authentik
+    # 3) auth på resten
+    import authentik-auth
 
-    # Webroot (må matche mounten du la til på caddy)
-    root * /srv
-
-    # Send .php til php-fpm (standard port er 9000)
+    # 4) app
+    root * /var/www/site1/public
     php_fastcgi php-fpm:9000
-
-    # Server statiske filer (css/js/bilder) + index.php/index.html
     file_server
   }
 }
