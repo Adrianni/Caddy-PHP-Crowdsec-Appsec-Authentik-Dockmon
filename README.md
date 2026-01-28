@@ -13,7 +13,7 @@ It also runs CrowdSec in its own container (LAPI + AppSec), with collections ins
 - deploy/compose.yaml           -> runs the full stack
 - deploy/Caddyfile              -> example config (MUST be changed to your domain)
 - deploy/crowdsec/acquis.d/*    -> acquis for Caddy + AppSec
-- deploy/.env.example           -> copy to deploy/.env
+- deploy/dotenv_example           -> copy to deploy/.env
 
 ## 1) Prepare
 Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the image):
