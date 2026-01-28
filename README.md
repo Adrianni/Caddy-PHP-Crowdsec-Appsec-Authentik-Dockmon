@@ -23,6 +23,7 @@ sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config} \
   /opt/Authentik/{postgres,redis,media,custom-templates}
 sudo chown -R 1000:1000 /opt/caddy/{data,config,logs}
 sudo chown -R 0:0 /opt/crowdsec/{data,config}
+sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,custom-templates}
 ```
 
 Go to the deploy folder and create `.env`:
