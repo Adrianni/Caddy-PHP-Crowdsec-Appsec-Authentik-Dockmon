@@ -1,4 +1,4 @@
-# Caddy (xcaddy custom) + CrowdSec (LAPI + AppSec) – Docker stack
+# Caddy (xcaddy custom) + CrowdSec (LAPI + AppSec) + Authentik – Docker stack
 
 This setup builds a custom Caddy binary with the following xcaddy modules:
 - github.com/sjtug/caddy2-filter
@@ -6,20 +6,21 @@ This setup builds a custom Caddy binary with the following xcaddy modules:
 - github.com/hslatman/caddy-crowdsec-bouncer/http
 - github.com/hslatman/caddy-crowdsec-bouncer/appsec
 
-It also runs CrowdSec in its own container (LAPI + AppSec), with collections installed at startup.
+It also runs CrowdSec in its own container (LAPI + AppSec), with collections installed at startup, plus Authentik behind Caddy.
 
 ## Layout
 - build/Dockerfile.caddy        -> builds the custom Caddy image
 - deploy/compose.yaml           -> runs the full stack
-- deploy/Caddyfile              -> example config (MUST be changed to your domain)
+- deploy/Caddyfile              -> localhost Caddy config with CrowdSec/AppSec + Authentik
 - deploy/crowdsec/acquis.d/*    -> acquis for Caddy + AppSec
-- deploy/dotenv_example           -> copy to deploy/.env
+- deploy/dotenv_example         -> copy to deploy/.env
 
 ## 1) Prepare
 Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the image):
 
 ```bash
-sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config}
+sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config} \
+  /opt/Authentik/{postgres,redis,media,custom-templates}
 sudo chown -R 1000:1000 /opt/caddy/{data,config,logs}
 sudo chown -R 0:0 /opt/crowdsec/{data,config}
 ```
@@ -32,7 +33,7 @@ cp dotenv_example .env
 nano .env
 ```
 
-Update `your.domain.tld` in `deploy/Caddyfile` to your actual domain.
+Set `CROWDSEC_API_TOKEN`, `AUTHENTIK_SECRET_KEY`, and `AUTHENTIK_POSTGRES_PASSWORD` in `deploy/.env`.
 
 ## 2) Start the stack (builds the Caddy image on first run)
 ```bash
@@ -60,6 +61,10 @@ docker compose logs -f caddy
 docker compose exec crowdsec cscli collections list
 docker compose exec crowdsec cscli metrics
 ```
+
+## 5) Access
+- `http://localhost` shows the validation page.
+- `http://localhost/authentik` proxies to Authentik.
 
 ## Notes
 - CrowdSec reads Caddy logs from `/opt/caddy/logs` via a shared bind mount.

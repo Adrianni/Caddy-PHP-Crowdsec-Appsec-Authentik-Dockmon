@@ -1,8 +1,6 @@
-# Cloudflare DNS-01 (om du bruker det)
-CLOUDFLARE_API_TOKEN=put-your-cloudflare-token-here
-
 # CrowdSec bouncer API key (genereres etter oppstart med cscli bouncers add)
 CROWDSEC_API_TOKEN=put-your-crowdsec-bouncer-key-here
 
-# Eventuelt andre env-variabler du bruker
-TESLA_APP_TOKEN=token
+# Authentik configuration
+AUTHENTIK_SECRET_KEY=change-me-to-a-long-random-string
+AUTHENTIK_POSTGRES_PASSWORD=change-me

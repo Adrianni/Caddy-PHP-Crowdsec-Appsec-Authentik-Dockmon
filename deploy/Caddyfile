@@ -22,14 +22,17 @@
   }
 }
 
-# TODO: Bytt ut `your.domain.tld` med ditt faktiske domenenavn.
-# Hvis du bruker Cloudflare DNS-01 med caddy-dns/cloudflare, sørg for at
-# CLOUDFLARE_API_TOKEN er satt i .env.
-your.domain.tld {
+localhost:80, localhost:443 {
   route {
     crowdsec
     appsec
 
-    respond "Caddy + CrowdSec (Bouncer + AppSec) OK"
+    handle_path /authentik* {
+      reverse_proxy authentik-server:9000
+    }
+
+    respond "Valid configuration. Crowdsec (✅ OK)<br> Appsec (✅ OK) <br> Authentik (✅ OK)" 200 {
+      close
+    }
   }
 }
