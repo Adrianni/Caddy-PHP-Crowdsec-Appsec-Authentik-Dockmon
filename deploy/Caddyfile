@@ -40,6 +40,13 @@
       }
     }
 
+# test:
+    handle /php-test {
+      root * /var/www/site1/public
+      rewrite * /phpinfo.php
+      php_fastcgi php-fpm:9000
+    }
+
     # 3) auth på resten
     import authentik-auth
 
