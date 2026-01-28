@@ -42,7 +42,7 @@
 
 # test:
     handle /php-test {
-      root * /var/www/site1/public
+      root * /var/www/site1
       rewrite * /phpinfo.php
       php_fastcgi php-fpm:9000
     }
@@ -51,7 +51,7 @@
     import authentik-auth
 
     # 4) app
-    root * /var/www/site1/public
+    root * /var/www/site1
     php_fastcgi php-fpm:9000
     file_server
   }
