@@ -53,6 +53,7 @@ services:
     image: ghcr.io/goauthentik/server:2024.10.2
     container_name: authentik-server
     restart: unless-stopped
+    command: server
     depends_on:
       authentik-postgres:
         condition: service_healthy
@@ -69,6 +70,9 @@ services:
     volumes:
       - /opt/Authentik/media:/media
       - /opt/Authentik/custom-templates:/templates
+    ports:
+      - "9000:9000"
+      - "9443:9443"
     networks:
       - proxy
 
