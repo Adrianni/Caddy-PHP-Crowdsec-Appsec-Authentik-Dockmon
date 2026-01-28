@@ -22,12 +22,14 @@
   }
 }
 
-localhost:80, localhost:443 {
+:80, :443 {
   route {
     crowdsec
     appsec
 
-    handle_path /authentik* {
+    redir /authentik /authentik/ 308
+
+    handle_path /authentik/* {
       reverse_proxy authentik-server:9000
     }
 
