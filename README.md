@@ -20,13 +20,15 @@ It also runs CrowdSec in its own container (LAPI + AppSec), with collections ins
 Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the image):
 
 ```bash
-sudo mkdir -p /opt/caddy/{data,config,logs} /opt/crowdsec/{data,config} \
+sudo mkdir -p /opt/caddy/{www-data,data,config,logs} /opt/crowdsec/{data,config} \
   /opt/Authentik/{postgres,redis,media,custom-templates} \
-  /opt/php-fpm/{data,config}
-sudo chown -R 1000:1000 /opt/caddy/{data,config,logs}
+  /opt/php-fpm/config
+sudo chown -R 1000:1000 /opt/caddy/{www-data,data,config,logs}
 sudo chown -R 0:0 /opt/crowdsec/{data,config}
 sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,custom-templates}
-sudo chown -R 1000:1000 /opt/php-fpm/{data,config}
+sudo chown -R 1000:1000 /opt/php-fpm/config
+sudo find /opt/caddy/www-data -type d -exec chmod 755 {} \;
+sudo find /opt/caddy/www-data -type f -exec chmod 644 {} \;
 ```
 
 Go to the deploy folder and create `.env`:
