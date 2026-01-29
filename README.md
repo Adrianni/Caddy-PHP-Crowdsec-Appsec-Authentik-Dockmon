@@ -6,7 +6,7 @@ This setup builds a custom Caddy binary with the following xcaddy modules:
 - github.com/hslatman/caddy-crowdsec-bouncer/http
 - github.com/hslatman/caddy-crowdsec-bouncer/appsec
 
-It also runs CrowdSec in its own container (LAPI + AppSec), with collections installed at startup, plus Authentik behind Caddy.
+It also runs CrowdSec in its own container (LAPI + AppSec), with collections installed at startup, plus Authentik behind docker-socket-proxy and Caddy.
 
 ## Layout
 - build/Dockerfile.caddy        -> builds the custom Caddy image
