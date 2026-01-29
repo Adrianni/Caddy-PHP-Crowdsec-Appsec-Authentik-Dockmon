@@ -70,6 +70,7 @@ services:
       - AUTHENTIK_POSTGRESQL__PASSWORD=${AUTHENTIK_POSTGRES_PASSWORD}
     volumes:
       - /opt/Authentik/media:/media
+      - /opt/Authentik/data:/data
       - /opt/Authentik/custom-templates:/templates
         #    ports:
       #      - "9000:9000"
@@ -99,6 +100,7 @@ services:
     command: worker
     volumes:
       - /opt/Authentik/media:/media
+      - /opt/Authentik/data:/data
       - /opt/Authentik/custom-templates:/templates
     networks:
       - proxy

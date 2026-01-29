@@ -22,11 +22,11 @@ Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the
 ```bash
 sudo mkdir -p /opt/caddy/{www-data,data,config,logs} /opt/crowdsec/{data,config} \
   /opt/crowdsec/data/acquis.d \
-  /opt/Authentik/{postgres,redis,media,custom-templates} \
+  /opt/Authentik/{postgres,redis,media,data,custom-templates} \
   /opt/php-fpm/config
 sudo chown -R 1000:1000 /opt/caddy/{www-data,data,config,logs}
 sudo chown -R 0:0 /opt/crowdsec/{data,config}
-sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,custom-templates}
+sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,data,custom-templates}
 sudo chown -R 1000:1000 /opt/php-fpm/config
 sudo find /opt/caddy/www-data -type d -exec chmod 755 {} \;
 sudo find /opt/caddy/www-data -type f -exec chmod 644 {} \;
@@ -91,6 +91,7 @@ docker compose exec crowdsec cscli metrics
 - AppSec must listen on 0.0.0.0:7422 in the container so Caddy can reach it.
 - Authentik images are pinned to a specific version in `deploy/compose.yaml` for reproducible upgrades.
 - Authentik uses a Docker socket proxy (instead of mounting `/var/run/docker.sock` directly) for outpost management. The proxy is limited to container/image and info access via `deploy/compose.yaml`.
+- Authentik 2025.12.x uses the `/data` mount for the file backend that powers Admin → Customization → Files. Make sure `/opt/Authentik/data` is mounted to `/data` (or configure S3 storage) to enable uploads.
 - Authentik bør bindes til `127.0.0.1` når den er konfigurert, slik at den ikke eksponeres direkte på nettverket. La Caddy stå for tilgang og videre routing.
 
 Example: bind Authentik to localhost in `deploy/compose.yaml` and proxy it via Caddy:
