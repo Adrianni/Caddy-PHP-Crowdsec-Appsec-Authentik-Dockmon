@@ -10,7 +10,7 @@ services:
     volumes:
       - /opt/crowdsec/data:/var/lib/crowdsec/data
       - /opt/crowdsec/config:/etc/crowdsec
-      - ./crowdsec/acquis.d:/etc/crowdsec/acquis.d:ro
+      - /opt/crowdsec/data/acquis.d:/etc/crowdsec/acquis.d:ro
       # Read Caddy logs from shared volume
       - /opt/caddy/logs:/var/log/caddy:ro
     networks:

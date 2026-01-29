@@ -21,6 +21,7 @@ Create the bind-mount directories on the host (Caddy runs as UID/GID 1000 in the
 
 ```bash
 sudo mkdir -p /opt/caddy/{www-data,data,config,logs} /opt/crowdsec/{data,config} \
+  /opt/crowdsec/data/acquis.d \
   /opt/Authentik/{postgres,redis,media,custom-templates} \
   /opt/php-fpm/config
 sudo chown -R 1000:1000 /opt/caddy/{www-data,data,config,logs}
@@ -29,6 +30,12 @@ sudo chown -R 1000:1000 /opt/Authentik/{postgres,redis,media,custom-templates}
 sudo chown -R 1000:1000 /opt/php-fpm/config
 sudo find /opt/caddy/www-data -type d -exec chmod 755 {} \;
 sudo find /opt/caddy/www-data -type f -exec chmod 644 {} \;
+```
+
+Copy the CrowdSec acquis configuration into the host data path (so both CrowdSec + AppSec config live under `/opt/crowdsec/data`):
+
+```bash
+sudo cp -a deploy/crowdsec/acquis.d/. /opt/crowdsec/data/acquis.d/
 ```
 
 Go to the deploy folder and create `.env`:
