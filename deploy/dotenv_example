@@ -4,3 +4,5 @@ CROWDSEC_API_TOKEN=put-your-crowdsec-bouncer-key-here
 # Authentik configuration
 AUTHENTIK_SECRET_KEY=change-me-to-a-long-random-string
 AUTHENTIK_POSTGRES_PASSWORD=change-me
+AUTHENTIK_HOST=http://authentik-server:9000
+AUTHENTIK_HOST_BROWSER=https://auth.domain.tls
