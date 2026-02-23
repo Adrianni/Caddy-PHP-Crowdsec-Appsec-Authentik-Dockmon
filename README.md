@@ -71,7 +71,7 @@ docker compose up -d --build
 Run:
 
 ```bash
-docker compose exec crowdsec cscli bouncers add caddyDmz
+docker compose exec crowdsec cscli bouncers add caddyAPI
 ```
 
 Copy the key that is printed and set it in `deploy/.env` as `CROWDSEC_API_TOKEN=...`.
